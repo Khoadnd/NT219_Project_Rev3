@@ -16,6 +16,20 @@ static bool G_DECODED = false;
 
 void setKey() {
   G_KEY = key::Key();
+  G_KEY.genRandomKey();
+  G_KEY_SET = true;
+}
+
+void setKey(const key::Key &key) {
+  G_KEY = key;
+  G_KEY_SET = true;
+
+  // G_KEY.lorenz.a -= 0.00001;
+}
+
+void setKey(const char *i_keyPath) {
+  G_KEY = key::Key();
+  G_KEY.readKey(i_keyPath);
   G_KEY_SET = true;
 }
 

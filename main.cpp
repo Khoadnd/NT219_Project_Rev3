@@ -25,7 +25,7 @@ int main() {
                          data_blue_scrambled, data_red, data_green, data_blue,
                          width, height);
 
-  cieucs::decode::setKey();
+  cieucs::decode::setKey("key.key");
 
   cieucs::decode::decode(data_red, data_green, data_blue, data_red_scrambled,
                          data_green_scrambled, data_blue_scrambled, width,

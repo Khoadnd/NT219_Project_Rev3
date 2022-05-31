@@ -8,6 +8,10 @@ namespace decode {
 
 void setKey();
 
+void setKey(const key::Key &key);
+
+void setKey(const char *i_keyPath);
+
 void unscramble(const img_processing::Data &i_data_red,
                 const img_processing::Data &i_data_green,
                 const img_processing::Data &i_data_blue,

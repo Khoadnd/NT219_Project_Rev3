@@ -16,8 +16,23 @@ static bool G_SCRAMBLED = false;
 
 void setKey() {
   G_KEY = key::Key();
+  G_KEY.genRandomKey();
+  G_KEY.readKey("key.key");
   G_KEY_SET = true;
 }
+
+void setKey(const key::Key &key) {
+  G_KEY = key;
+  G_KEY_SET = true;
+}
+
+void setKey(const char *i_keyPath) {
+  G_KEY = key::Key();
+  G_KEY.readKey(i_keyPath);
+  G_KEY_SET = true;
+}
+
+key::Key getKey() { return G_KEY; }
 
 void scramble(const img_processing::Data &i_data_red,
               const img_processing::Data &i_data_green,
@@ -100,8 +115,8 @@ void encode(const img_processing::Data &i_data_red,
 
 void resetState() {
   G_SCRAMBLED = false;
-  G_KEY_SET = false;
-  G_KEY = {};
+  // G_KEY_SET = false;
+  // G_KEY = {};
 }
 
 } // namespace encode

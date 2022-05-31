@@ -67,7 +67,8 @@
 				"-lopencv_xphoto",
 				"-lopencv_photo",
 				"-lopencv_imgproc",
-				"-lopencv_core"
+				"-lopencv_core",
+				"-lcryptopp"
 			],
 			"options": {
 				"cwd": "${fileDirname}"

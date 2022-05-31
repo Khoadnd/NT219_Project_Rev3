@@ -8,6 +8,12 @@ namespace encode {
 
 void setKey();
 
+void setKey(const key::Key &key);
+
+void setKey(const char *i_keyPath);
+
+key::Key getKey();
+
 void scramble(const img_processing::Data &i_data_red,
               const img_processing::Data &i_data_green,
               const img_processing::Data &i_data_blue,

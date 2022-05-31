@@ -1,3 +1,4 @@
 CompileFlags:
   Add:
     - "--include-directory=/usr/local/include/opencv4"
+    - "-std=c++20"
