@@ -44,7 +44,40 @@ $ pkg-config --modversion opencv4
 output
 4.5.5
 ```
-## 2. Install C++20 support  
+## 2. Install CryptoPP
+- Download the CryptoPP files and extract it
+```
+https://github.com/weidai11/cryptopp/releases/tag/CRYPTOPP_8_6_0
+```
+- Change directory to CryptoPP code, then run
+```
+$ make -j8
+$ make -j8 all 
+$ make -j8 test
+$ make install
+```
+- Add this flag `-lcryptopp` to compiler
+## 3. Install mp++, gmp, mpfr, mpc, flint,
+- Download and extract these files in to their respective directories
+```
+https://gmplib.org/download/gmp/gmp-6.2.1.tar.lz
+https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.xz
+https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz
+https://www.flintlib.org/flint-2.8.5.tar.gz
+https://github.com/fredrik-johansson/arb/archive/refs/tags/2.22.1.zip
+```
+- The following steps apply to each of the above files
+```
+$ cd <directory>
+$ cmake --build . 
+$ sudo make install
+```
+- mp++ compiles with the following flags
+```
+$ cmake --configure . -DMPPP_WITH_MPFR=true -DMPPP_WITH_MPC=true -DMPPP_WITH_ARB=true -DMPPP_WITH_QUADMATH=true
+$ cmake --build . --target install
+```
+## 4. Install C++20 support  
 - Install tools
 ```
 $ sudo apt install gcc-10 gcc-10-base gcc-10-doc g++-10 libstdc++-10-dev libstdc++-10-doc
@@ -65,7 +98,7 @@ $ cd NT219_Project_Rev2
 ```
 - Compile the project
 ```
-$ g++-10 -std=c++20 -o main main.cpp src/*.cpp $(pkg-config opencv4 --cflags --libs)
+$ g++-10 -std=c++20 -o main main.cpp src/*.cpp $(pkg-config opencv4 --cflags --libs) -lcryptopp -lmpfr -lmpc -lmp++
 ```
 - Run
 ```
