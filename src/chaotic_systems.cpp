@@ -1,7 +1,6 @@
 #include "../include/chaotic_systems.h"
 
 #include <cassert>
-#include <cmath>
 
 namespace cieucs {
 namespace chaotic {
@@ -10,29 +9,34 @@ static constexpr size_t G_P1 = 150000;
 static constexpr size_t G_P2 = 150000;
 static constexpr size_t G_P3 = 150000;
 
-void genLorenz(DoubleVec &o_x, DoubleVec &o_y, DoubleVec &o_z,
-               const size_t &i_size, const key::Key &i_key) {
-  double x = i_key.lorenz.x0;
-  double y = i_key.lorenz.y0;
-  double z = i_key.lorenz.z0;
-  double dx = 0;
-  double dy = 0;
-  double dz = 0;
+void genLorenz(RealVec &o_x, RealVec &o_y, RealVec &o_z, const size_t &i_size,
+               const key::Key &i_key) {
+  real x = i_key.lorenz.x0;
+  real y = i_key.lorenz.y0;
+  real z = i_key.lorenz.z0;
+
+  // 512 bit precision
+  real dx = real{"0", 512};
+  real dy = real{"0", 512};
+  real dz = real{"0", 512};
 
   o_x.reserve(i_size);
   o_y.reserve(i_size);
   o_z.reserve(i_size);
 
+  // Push the initial values
   o_x.push_back(x);
   o_y.push_back(y);
   o_z.push_back(z);
 
+  // Step
   float dt = 0.01f;
 
   for (size_t i = 1; i < i_size; ++i) {
-    dx = x + dt * (i_key.lorenz.a * (y - x));
-    dy = y + dt * ((i_key.lorenz.b - z) * x - y);
-    dz = z + dt * (x * y - i_key.lorenz.c * z);
+    // Runge-Kutta method
+    dx = x + dt * (i_key.lorenz.alpha * (y - x));
+    dy = y + dt * ((i_key.lorenz.rho - z) * x - y);
+    dz = z + dt * (x * y - i_key.lorenz.beta * z);
 
     x = dx;
     y = dy;
@@ -44,29 +48,28 @@ void genLorenz(DoubleVec &o_x, DoubleVec &o_y, DoubleVec &o_z,
   }
 }
 
-void equalizeLorenz(const DoubleVec &i_x, const DoubleVec &i_y,
-                    const DoubleVec &i_z, Vec &o_x, Vec &o_y, Vec &o_z,
-                    const size_t &i_width, const size_t &i_height,
-                    const size_t &i_size) {
+void equalizeLorenz(const RealVec &i_x, const RealVec &i_y, const RealVec &i_z,
+                    Vec &o_x, Vec &o_y, Vec &o_z, const size_t &i_width,
+                    const size_t &i_height, const size_t &i_size) {
   o_x.reserve(i_size);
   o_y.reserve(i_size);
   o_z.reserve(i_size);
 
   for (int i = 0; i < i_size; ++i) {
-    o_x.push_back(static_cast<long long>(ceil(i_x[i] * G_P1)) % i_width);
-    o_y.push_back(static_cast<long long>(ceil(i_y[i] * G_P2)) % i_height);
-    o_z.push_back(static_cast<long long>(ceil(i_z[i] * G_P3)) % 256);
+    o_x.push_back(mppp::fmod(mppp::ceil(i_x[i] * G_P1), i_width));
+    o_y.push_back(mppp::fmod(mppp::ceil(i_y[i] * G_P2), i_height));
+    o_z.push_back(mppp::fmod(mppp::ceil(i_z[i] * G_P3), 256));
   }
 }
 
-void genRossler(DoubleVec &o_x, DoubleVec &o_y, DoubleVec &o_z,
-                const size_t &i_size, const key::Key &i_key) {
-  double x = i_key.rossler.x0;
-  double y = i_key.rossler.y0;
-  double z = i_key.rossler.z0;
-  double dx = 0;
-  double dy = 0;
-  double dz = 0;
+void genRossler(RealVec &o_x, RealVec &o_y, RealVec &o_z, const size_t &i_size,
+                const key::Key &i_key) {
+  real x = i_key.rossler.x0;
+  real y = i_key.rossler.y0;
+  real z = i_key.rossler.z0;
+  real dx = real{"0", 512};
+  real dy = real{"0", 512};
+  real dz = real{"0", 512};
 
   o_x.reserve(i_size);
   o_y.reserve(i_size);
@@ -80,8 +83,8 @@ void genRossler(DoubleVec &o_x, DoubleVec &o_y, DoubleVec &o_z,
 
   for (size_t i = 1; i < i_size; ++i) {
     dx = x + dt * (-(y + z));
-    dy = y + dt * (x + i_key.rossler.a * y);
-    dz = z + dt * (i_key.rossler.b + z * (x - i_key.rossler.c));
+    dy = y + dt * (x + i_key.rossler.alpha * y);
+    dz = z + dt * (i_key.rossler.beta + z * (x - i_key.rossler.gamma));
 
     x = dx;
     y = dy;
@@ -93,20 +96,19 @@ void genRossler(DoubleVec &o_x, DoubleVec &o_y, DoubleVec &o_z,
   }
 }
 
-void restrictRossler(const DoubleVec &i_x, const DoubleVec &i_y,
-                     const DoubleVec &i_z, UcharVec &o_x, UcharVec &o_y,
-                     UcharVec &o_z) {
+void restrictRossler(const RealVec &i_x, const RealVec &i_y, const RealVec &i_z,
+                     UcharVec &o_x, UcharVec &o_y, UcharVec &o_z) {
   o_x.reserve(i_x.size());
   o_y.reserve(i_y.size());
   o_z.reserve(i_z.size());
 
   for (size_t i = 0; i < i_x.size(); ++i) {
     o_x.push_back(static_cast<unsigned char>(
-        (static_cast<long long>(i_x[i] * 10e15)) % 256));
+        mppp::fmod((i_x[i] * 10e15).round().abs(), 256)));
     o_y.push_back(static_cast<unsigned char>(
-        (static_cast<long long>(i_y[i] * 10e15)) % 256));
+        mppp::fmod((i_y[i] * 10e15).round().abs(), 256)));
     o_z.push_back(static_cast<unsigned char>(
-        (static_cast<long long>(i_z[i] * 10e15)) % 256));
+        mppp::fmod((i_z[i] * 10e15).round().abs(), 256)));
   }
 }
 

@@ -1,5 +1,6 @@
 #include "../include/key.h"
 
+#include <boost/archive/binary_oarchive.hpp>
 #include <cryptopp/filters.h>
 #include <fstream>
 #include <random>
@@ -12,20 +13,41 @@ namespace cieucs {
 namespace key {
 
 void Key::genRandomKey() {
+  srand(static_cast<unsigned>(time(nullptr)));
 
-  double upperBound = 10.f;
-  double lowerBound = -10.f;
+  real lo = real{"-1", 512};
+  real hi = real{"1", 512};
 
-  std::uniform_real_distribution<double> unif(lowerBound, upperBound);
-  std::default_random_engine re(time(nullptr));
+  lorenz.x0.set(lo + rand() / (RAND_MAX / (hi - lo)));
+  lorenz.y0.set(lo + rand() / (RAND_MAX / (hi - lo)));
+  lorenz.z0.set(lo + rand() / (RAND_MAX / (hi - lo)));
 
-  lorenz.x0 = unif(re);
-  lorenz.y0 = unif(re);
-  lorenz.z0 = unif(re);
+  rossler.x0.set(lo + rand() / (RAND_MAX / (hi - lo)));
+  rossler.y0.set(lo + rand() / (RAND_MAX / (hi - lo)));
+  rossler.z0.set(lo + rand() / (RAND_MAX / (hi - lo)));
 
-  rossler.x0 = unif(re);
-  rossler.y0 = unif(re);
-  rossler.z0 = unif(re);
+  // generate lorenz parameters
+  lo.set("9.7");
+  hi.set("37.4");
+  lorenz.alpha.set(lo + rand() / (RAND_MAX / (hi - lo)));
+
+  lo.set("25.6");
+  hi.set("94.8");
+  lorenz.rho.set(lo + rand() / (RAND_MAX / (hi - lo)));
+
+  lo.set("2.6");
+  hi.set("8.4");
+  lorenz.beta.set(lo + rand() / (RAND_MAX / (hi - lo)));
+
+  // generate rossler parameters
+  lo.set("0.2");
+  hi.set("0.38");
+  rossler.alpha.set(lo + rand() / (RAND_MAX / (hi - lo)));
+  rossler.beta.set(lo + rand() / (RAND_MAX / (hi - lo)));
+
+  lo.set("4.3");
+  hi.set("5.3");
+  rossler.gamma.set(lo + rand() / (RAND_MAX / (hi - lo)));
 
   writeKey("key.key");
 }
@@ -37,29 +59,31 @@ void Key::writeKey(const char *o_keyPath) {
   std::stringstream ss;
 
   ss << "Lorenz attractor parameters:" << std::endl;
-  ss << "a = " << lorenz.a << std::endl;
-  ss << "b = " << lorenz.b << std::endl;
-  ss << "c = " << lorenz.c << std::endl;
-  ss << "x0 = " << lorenz.x0 << std::endl;
-  ss << "y0 = " << lorenz.y0 << std::endl;
-  ss << "z0 = " << lorenz.z0 << std::endl;
+  ss << "alpha = " << lorenz.alpha.to_string() << std::endl;
+  ss << "rho = " << lorenz.rho.to_string() << std::endl;
+  ss << "beta = " << lorenz.beta.to_string() << std::endl;
+  ss << "x0 = " << lorenz.x0.to_string() << std::endl;
+  ss << "y0 = " << lorenz.y0.to_string() << std::endl;
+  ss << "z0 = " << lorenz.z0.to_string() << std::endl;
 
   ss << std::endl;
 
   ss << "Rossler attractor parameters:" << std::endl;
-  ss << "a = " << rossler.a << std::endl;
-  ss << "b = " << rossler.b << std::endl;
-  ss << "c = " << rossler.c << std::endl;
-  ss << "x0 = " << rossler.x0 << std::endl;
-  ss << "y0 = " << rossler.y0 << std::endl;
-  ss << "z0 = " << rossler.z0 << std::endl;
+  ss << "alpha = " << rossler.alpha.to_string() << std::endl;
+  ss << "beta = " << rossler.beta.to_string() << std::endl;
+  ss << "gamma = " << rossler.gamma.to_string() << std::endl;
+  ss << "x0 = " << rossler.x0.to_string() << std::endl;
+  ss << "y0 = " << rossler.y0.to_string() << std::endl;
+  ss << "z0 = " << rossler.z0.to_string() << std::endl;
 
-  std::string data;
-  CryptoPP::StringSource source(
-      ss.str(), true,
-      new CryptoPP::Base64Encoder(new CryptoPP::StringSink(data)));
+  // uncomment to encode key to base64
+  // std::string data;
+  // CryptoPP::StringSource source(
+  //     ss.str(), true,
+  //     new CryptoPP::Base64Encoder(new CryptoPP::StringSink(data)));
 
-  key_file << data;
+  // key_file << data;
+  key_file << ss.str();
 
   key_file.close();
 }
@@ -74,12 +98,19 @@ void Key::readKey(const char *i_keyPath) {
   std::string line = "", buf = "";
   std::string data = "";
 
+  // uncomment to decode key from base64
+  // while (std::getline(key_file, line)) {
+  //   CryptoPP::StringSource source(
+  //       line, true, new CryptoPP::Base64Decoder(new
+  //       CryptoPP::StringSink(buf)));
+  //   data += buf;
+  //   line.clear();
+  //   buf.clear();
+  // }
+
   while (std::getline(key_file, line)) {
-    CryptoPP::StringSource source(
-        line, true, new CryptoPP::Base64Decoder(new CryptoPP::StringSink(buf)));
-    data += buf;
+    data += line + "\n";
     line.clear();
-    buf.clear();
   }
 
   key_file.close();
@@ -90,43 +121,43 @@ void Key::readKey(const char *i_keyPath) {
     if (line.find("Lorenz attractor parameters:") != std::string::npos) {
 
       std::getline(ss, line);
-      lorenz.a = std::stof(line.substr(line.find("a = ") + 4));
+      lorenz.alpha.set(line.substr(line.find("alpha = ") + 8));
 
       std::getline(ss, line);
-      lorenz.b = std::stof(line.substr(line.find("b = ") + 4));
+      lorenz.rho.set(line.substr(line.find("rho = ") + 6));
 
       std::getline(ss, line);
-      lorenz.c = std::stof(line.substr(line.find("c = ") + 4));
+      lorenz.beta.set(line.substr(line.find("beta = ") + 7));
 
       std::getline(ss, line);
-      lorenz.x0 = std::stof(line.substr(line.find("x0 = ") + 5));
+      lorenz.x0.set(line.substr(line.find("x0 = ") + 5));
 
       std::getline(ss, line);
-      lorenz.y0 = std::stof(line.substr(line.find("y0 = ") + 5));
+      lorenz.y0.set(line.substr(line.find("y0 = ") + 5));
 
       std::getline(ss, line);
-      lorenz.z0 = std::stof(line.substr(line.find("z0 = ") + 5));
+      lorenz.z0.set(line.substr(line.find("z0 = ") + 5));
 
     } else if (line.find("Rossler attractor parameters:") !=
                std::string::npos) {
 
       std::getline(ss, line);
-      rossler.a = std::stof(line.substr(line.find("a = ") + 4));
+      rossler.alpha.set(line.substr(line.find("alpha = ") + 8));
 
       std::getline(ss, line);
-      rossler.b = std::stof(line.substr(line.find("b = ") + 4));
+      rossler.beta.set(line.substr(line.find("beta = ") + 7));
 
       std::getline(ss, line);
-      rossler.c = std::stof(line.substr(line.find("c = ") + 4));
+      rossler.gamma.set(line.substr(line.find("gamma = ") + 8));
 
       std::getline(ss, line);
-      rossler.x0 = std::stof(line.substr(line.find("x0 = ") + 5));
+      rossler.x0.set(line.substr(line.find("x0 = ") + 5));
 
       std::getline(ss, line);
-      rossler.y0 = std::stof(line.substr(line.find("y0 = ") + 5));
+      rossler.y0.set(line.substr(line.find("y0 = ") + 5));
 
       std::getline(ss, line);
-      rossler.z0 = std::stof(line.substr(line.find("z0 = ") + 5));
+      rossler.z0.set(line.substr(line.find("z0 = ") + 5));
     }
   }
 }

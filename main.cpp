@@ -25,6 +25,17 @@ int main() {
                          data_blue_scrambled, data_red, data_green, data_blue,
                          width, height);
 
+  std::cout << "Encoded and Scrambled image saved as image_encoded.jpg and "
+               "image_scramble.jpg"
+            << std::endl;
+
+  char temp;
+  std::cout << "Decode? (y/n) ";
+  temp = std::cin.get();
+  if (temp == 'n') {
+    return 0;
+  }
+
   cieucs::decode::setKey("key.key");
 
   cieucs::decode::decode(data_red, data_green, data_blue, data_red_scrambled,
@@ -34,6 +45,10 @@ int main() {
   cieucs::decode::unscramble(data_red_scrambled, data_green_scrambled,
                              data_blue_scrambled, data_red, data_green,
                              data_blue, width, height);
+
+  std::cout << "Decoded and unscrambled image saved as image_decoded.jpg and "
+               "image_unscramble.jpg"
+            << std::endl;
 
   return 0;
 }

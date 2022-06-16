@@ -17,6 +17,7 @@ static bool G_DECODED = false;
 void setKey() {
   G_KEY = key::Key();
   G_KEY.genRandomKey();
+  // G_KEY.readKey("key.key");
   G_KEY_SET = true;
 }
 
@@ -40,7 +41,7 @@ void unscramble(const img_processing::Data &i_data_red,
                 img_processing::Data &o_data_green,
                 img_processing::Data &o_data_blue, const size_t &i_width,
                 const size_t &i_height) {
-  assert(G_KEY_SET && G_DECODED);
+  assert(G_KEY_SET);
 
   const size_t &size = i_width * i_height;
 
@@ -49,7 +50,7 @@ void unscramble(const img_processing::Data &i_data_red,
   o_data_blue.resize(i_data_blue.size());
 
   // step 2 gen lorenz and equalize it
-  chaotic::DoubleVec x, y, z;
+  chaotic::RealVec x, y, z;
   chaotic::genLorenz(x, y, z, size, G_KEY);
 
   chaotic::Vec x_eq, y_eq, z_eq;
@@ -62,10 +63,6 @@ void unscramble(const img_processing::Data &i_data_red,
   helper::sort_indexes(z_eq, z_eq_indexes);
 
   for (size_t i = 0; i < size; ++i) {
-    assert(i < size);
-    assert(x_eq_indexes[i] < size);
-    assert(y_eq_indexes[i] < size);
-    assert(z_eq_indexes[i] < size);
     o_data_red[x_eq_indexes[i]] = i_data_red[i];
     o_data_green[y_eq_indexes[i]] = i_data_green[i];
     o_data_blue[z_eq_indexes[i]] = i_data_blue[i];
@@ -89,7 +86,7 @@ void decode(const img_processing::Data &i_data_red,
   const size_t size = i_width * i_height;
 
   // gen chaotic key
-  chaotic::DoubleVec x, y, z;
+  chaotic::RealVec x, y, z;
   chaotic::genRossler(x, y, z, size, G_KEY);
 
   chaotic::UcharVec x_restricted, y_restricted, z_restricted;

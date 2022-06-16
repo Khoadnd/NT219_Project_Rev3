@@ -1,27 +1,30 @@
 #pragma once
+#include <mp++/mp++.hpp>
 
 namespace cieucs {
 namespace key {
 
+using real = mppp::real;
+using namespace mppp::literals;
 struct Key {
   // Lorenz attractor parameters
   struct Lorenz {
-    float a = 10.f;
-    float b = 28.f;
-    float c = 8.f / 3.f;
-    double x0 = 1.1f;
-    double y0 = 1.3f;
-    double z0 = 1.5f;
+    real alpha = real{"10", 512};
+    real rho = real{"28", 512};
+    real beta = real{8 / 3_q1, 512};
+    real x0 = real{"1.1", 512};
+    real y0 = real{"1.3", 512};
+    real z0 = real{"1.5", 512};
   } lorenz;
 
   // Rossler attractor parameters
   struct Rossler {
-    float a = 0.1f;
-    float b = 0.1f;
-    float c = 14.f;
-    double x0 = 1.f;
-    double y0 = 1.f;
-    double z0 = 1.f;
+    real alpha = real{"0.2", 512};
+    real beta = real{"0.2", 512};
+    real gamma = real{"5.7", 512};
+    real x0 = real{"1.0", 512};
+    real y0 = real{"1.0", 512};
+    real z0 = real{"1.0", 512};
   } rossler;
 
   void genRandomKey();
