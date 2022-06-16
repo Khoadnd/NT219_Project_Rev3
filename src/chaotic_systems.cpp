@@ -5,9 +5,9 @@
 namespace cieucs {
 namespace chaotic {
 
-static constexpr size_t G_P1 = 150000;
-static constexpr size_t G_P2 = 150000;
-static constexpr size_t G_P3 = 150000;
+static constexpr size_t G_P1 = 20521463;
+static constexpr size_t G_P2 = 20520189;
+static constexpr size_t G_P3 = 20520562;
 
 void genLorenz(RealVec &o_x, RealVec &o_y, RealVec &o_z, const size_t &i_size,
                const key::Key &i_key) {
@@ -104,11 +104,11 @@ void restrictRossler(const RealVec &i_x, const RealVec &i_y, const RealVec &i_z,
 
   for (size_t i = 0; i < i_x.size(); ++i) {
     o_x.push_back(static_cast<unsigned char>(
-        mppp::fmod((i_x[i] * 10e15).round().abs(), 256)));
+        mppp::fmod((i_x[i] * 10e128).round().abs(), 256)));
     o_y.push_back(static_cast<unsigned char>(
-        mppp::fmod((i_y[i] * 10e15).round().abs(), 256)));
+        mppp::fmod((i_y[i] * 10e128).round().abs(), 256)));
     o_z.push_back(static_cast<unsigned char>(
-        mppp::fmod((i_z[i] * 10e15).round().abs(), 256)));
+        mppp::fmod((i_z[i] * 10e128).round().abs(), 256)));
   }
 }
 

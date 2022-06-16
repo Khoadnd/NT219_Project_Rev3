@@ -30,7 +30,8 @@ int main() {
             << std::endl;
 
   char temp;
-  std::cout << "Decode? (y/n) ";
+  std::cout << "Decode? (y/n) you could modify key.key to exhibit the "
+               "sensitivity of chaotic system\n";
   temp = std::cin.get();
   if (temp == 'n') {
     return 0;
