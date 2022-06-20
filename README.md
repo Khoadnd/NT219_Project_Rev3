@@ -63,13 +63,14 @@ https://github.com/fredrik-johansson/arb/archive/refs/tags/2.22.1.zip
 - The following steps apply to each of the above files
 ```
 cd <directory>
-cmake --build . 
+./configure
+make -j8
 sudo make install
 ```
 - mp++ compiles with the following flags
 ```
 cmake --configure . -DMPPP_WITH_MPFR=true -DMPPP_WITH_MPC=true -DMPPP_WITH_ARB=true -DMPPP_WITH_QUADMATH=true
-cmake --build . --target install
+sudo cmake --build . --target install
 ```
 ## 4. Install C++20 support  
 - Install tools
