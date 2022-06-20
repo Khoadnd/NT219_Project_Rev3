@@ -19,13 +19,13 @@ mkdir build && cd build
 ```
 - Set up OpenCV build with CMake
 ```
-cmake -D CMAKE_BUILD_TYPE=RELEASE \  
-      -D CMAKE_INSTALL_PREFIX=/usr/local \  
-      -D INSTALL_C_EXAMPLES=ON \  
-      -D INSTALL_PYTHON_EXAMPLES=ON \  
-      -D OPENCV_GENERATE_PKGCONFIG=ON \  
-      -D OPENCV_EXTRA_MODULES_PATH=~/opencv_build/opencv_contrib/modules \  
-      -D BUILD_EXAMPLES=ON ..
+cmake -DCMAKE_BUILD_TYPE=RELEASE \  
+      -DCMAKE_INSTALL_PREFIX=/usr/local \  
+      -DINSTALL_C_EXAMPLES=ON \  
+      -DINSTALL_PYTHON_EXAMPLES=ON \  
+      -DOPENCV_GENERATE_PKGCONFIG=ON \  
+      -DOPENCV_EXTRA_MODULES_PATH=~/opencv_build/opencv_contrib/modules \  
+      -DBUILD_EXAMPLES=ON ..
 ```
 - Start the compilation process
 ```
