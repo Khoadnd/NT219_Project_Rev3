@@ -54,7 +54,7 @@ https://github.com/weidai11/cryptopp/releases/tag/CRYPTOPP_8_6_0
 make -j8
 make -j8 all 
 make -j8 test
-make install
+sudo make install
 ```
 - Add this flag `-lcryptopp` to compiler
 ## 3. Install mp++, gmp, mpfr, mpc, flint,
