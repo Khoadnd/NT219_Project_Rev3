@@ -1,6 +1,5 @@
 #include "../include/key.h"
 
-#include <boost/archive/binary_oarchive.hpp>
 #include <cryptopp/filters.h>
 #include <fstream>
 #include <random>
